@@ -1,82 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <title>計算ゲーム</title>
-  <script type="module">
-    // Firebase SDK のインポート
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-    // あなたの Firebase 設定情報をここに貼ってください
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-
-    // 初期化
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // Googleログイン
-    async function login() {
-      const provider = new GoogleAuthProvider();
-      try {
-        await signInWithPopup(auth, provider);
-      } catch (error) {
-        console.error("ログイン失敗:", error);
-      }
-    }
-
-    // ログイン状態を監視
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        document.getElementById("status").textContent = `こんにちは、${user.displayName} さん`;
-        const uid = user.uid;
-
-        // スコアの取得
-        const docRef = doc(db, "scores", uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          document.getElementById("score").textContent = `前回のスコア: ${docSnap.data().score}`;
-        } else {
-          document.getElementById("score").textContent = "まだスコアはありません。";
-        }
-      } else {
-        document.getElementById("status").textContent = "ログインしていません。";
-      }
-    });
-
-    // スコアを保存する関数（仮でランダム）
-    async function saveScore() {
-      const user = auth.currentUser;
-      if (!user) return alert("ログインしてください");
-
-      const uid = user.uid;
-      const score = Math.floor(Math.random() * 100); // 仮スコア
-      await setDoc(doc(db, "scores", uid), {
-        score: score,
-        updatedAt: new Date()
-      });
-      alert("スコアを保存しました: " + score);
-      document.getElementById("score").textContent = `保存したスコア: ${score}`;
-    }
-
-    window.login = login;
-    window.saveScore = saveScore;
-  </script>
+  <style>
+    body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+    #question { font-size: 2em; margin-bottom: 20px; }
+    button { font-size: 1.5em; margin: 5px; }
+    #result { margin-top: 20px; font-size: 1.2em; }
+  </style>
 </head>
 <body>
-  <h1>教育ゲーム：スコア管理</h1>
-  <p id="status">ログインしていません。</p>
-  <p id="score"></p>
-  <button onclick="login()">Googleでログイン</button>
-  <button onclick="saveScore()">スコアを保存</button>
+  <h1>計算ゲーム</h1>
+  <div id="question"></div>
+  <div id="buttons"></div>
+  <div id="result"></div>
+  <div id="timer"></div>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+  <script src="game.js"></script>
 </body>
 </html>
+
